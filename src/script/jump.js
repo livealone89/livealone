@@ -260,6 +260,22 @@ document.addEventListener("keyup", function (event) {
     moveCharacter(); // Вызываем функцию для перемещения персонажа
   }
 });
+// Обработчик наклона устройства 
+// Добавляем обработчик события наклона устройства
+window.addEventListener("deviceorientation", handleDeviceOrientation);
+// Функция для обработки изменения положения устройства
+function handleDeviceOrientation(event) {
+  const tiltThreshold = 10; // Порог наклона для определения направления движения
+
+  if (event.gamma < -tiltThreshold) { // Наклон влево
+    movementDirection = -1;
+  } else if (event.gamma > tiltThreshold) { // Наклон вправо
+    movementDirection = 1;
+  } else { // Устройство находится в вертикальном положении
+    movementDirection = 0;
+    moveCharacter(); // Вызываем функцию для перемещения персонажа
+  }
+}
 // Функция прыжка
 function jump() {
   clearInterval(jumpInterval);

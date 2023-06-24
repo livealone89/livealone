@@ -320,8 +320,6 @@ function jump() {
         }
         calculatedJump +=1;
       } else {    // Фаза падения после прыжка
-        teleport.load();
-        teleport.play();
         // Определение верхней платформы
         highestPrevJump = parseInt(character.style.bottom);
         scoreJump=highestPrevJump;
@@ -429,7 +427,7 @@ function basePlatformGenerate () {
     newPlatform.style.bottom = gpose.top + "px"
     newPlatform.style.left = gpose.left-15 + "px"
     var platformImage = document.createElement("img");
-    platformImage.src = "./src/img/PlBase.png"
+    platformImage.src = "./src/img/Plbase.png"
     platformImage.width = gameField.clientWidth+20;
     newPlatform.appendChild(platformImage);
     gameField.appendChild(newPlatform);
@@ -472,7 +470,7 @@ function createNewPlatform(lowestHeight, highestHieght, platformCount) {
         // Генерация монеток
         if (Math.floor(Math.random()*10) <= (9-gameDifficult*2)) {
           let coinImage = document.createElement("img");
-          coinImage.src = './src/img/Coin.png'
+          coinImage.src = './src/img/coin.png'
           coinImage.style.position = "relative";
           coinImage.style.top = '-70px';
           coinImage.style.left = '20px';

@@ -1,0 +1,204 @@
+/* montserrat-regular - latin_cyrillic */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  src: local(''),
+       url('../fonts/montserrat-v25-latin_cyrillic-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/montserrat-v25-latin_cyrillic-regular.woff') format('woff'), /* Modern Browsers */;
+}        
+/* montserrat-300 - latin_cyrillic */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 300;
+  src: local(''),
+       url('../fonts/montserrat-v25-latin_cyrillic-300.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/montserrat-v25-latin_cyrillic-300.woff') format('woff'), /* Modern Browsers */;
+}        
+/* montserrat-600 - latin_cyrillic */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 600;
+  src: local(''),
+       url('../fonts/montserrat-v25-latin_cyrillic-600.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/montserrat-v25-latin_cyrillic-600.woff') format('woff'), /* Modern Browsers */;
+}    
+/* montserrat-700 - latin_cyrillic */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 700;
+  src: local(''),
+       url('../fonts/montserrat-v25-latin_cyrillic-700.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/montserrat-v25-latin_cyrillic-700.woff') format('woff'), /* Modern Browsers */;
+}       
+/* montserrat-800 - latin_cyrillic */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 800;
+  src: local(''),
+       url('../fonts/montserrat-v25-latin_cyrillic-800.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/montserrat-v25-latin_cyrillic-800.woff') format('woff'), /* Modern Browsers */;
+} 
+/* train-one-regular - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Train One';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/train-one-v13-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+* {
+  box-sizing: border-box;
+}
+a {
+  text-decoration: none;
+}
+p {
+  margin: 0;
+}
+h1 {
+  margin: 0;
+  color:darkslateblue;
+  text-shadow: 0px 3px 0px #b2a98f,
+              0px 14px 10px rgba(0,0,0,0.15),
+              0px 24px 2px rgba(0,0,0,0.1),
+              0px 34px 30px rgba(0,0,0,0.1);
+}
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+img {
+  max-width: 100%;
+}
+html {
+  font-family: "Montserrat", sans-serif;
+  
+} 
+#game {
+  display: flex;
+  justify-content: center;
+  background: #555;
+}
+#mainBG {
+  display: flex;
+  justify-content: center;
+  max-width: 40%;
+  min-width: 30vw;
+  min-height: 97vh;
+  background: url(../img/back4.jpg)  no-repeat;
+  background-position: bottom;
+  background-size: 250%;
+
+}
+#character {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  bottom: 20px;
+  filter: blur(0.5px);
+  background: url(../img/CharBody.png) no-repeat center;
+  background-size: 45%;
+}
+#CharRightEar {
+  position: absolute;
+  left: 20px;
+  height: 80px; 
+}
+#CharLeftEar {
+  position: absolute;
+  left: 20px;
+  height: 80px;
+}
+#CharRightHand {
+  position: absolute;
+  left: 20px;
+  height: 80px;
+}
+#CharLeftHand {
+  position: absolute;
+  left: 20px;
+  height: 80px;
+}
+
+
+#platform {
+  position: relative;
+  max-width: 100px;
+  max-height: 100px;
+}
+.platform :first-child {
+  filter:hue-rotate(220deg) brightness(0.8);
+
+}
+#gameScoreBlock {
+  height: 100px;
+  font-size: 20px;
+
+}
+img.coin {
+  animation: 3s linear 0s normal none infinite running coin;
+  -webkit-animation: 3s linear 0s normal none infinite running coin;
+
+}
+@keyframes coin {
+  0% {
+    transform: rotate(0deg) translate(0px, 0%);
+  }
+  50% {
+    transform: rotate(180deg) translate(0px, 10px);
+  }
+  100% {
+    transform: rotate(360deg) translate(0px, 0%);
+  }
+}
+@-webkit-keyframes coin {
+  0% {
+    transform: rotate(0deg) translate(0px, 0%);
+  }
+  50% {
+    transform: rotate(180deg) translate(0px, 10px);
+  }
+  100% {
+    transform: rotate(360deg) translate(0px, 0%);
+  }
+}
+
+
+
+.endButton {
+  position: relative;
+  display: inline-block;
+  color: #777674;
+  font-weight: bold;
+  text-decoration: none;
+  text-shadow: rgba(255,255,255,.5) 1px 1px, rgba(100,100,100,.3) 3px 7px 3px;
+  user-select: none;
+  padding: 0.2em 0.2em;
+  margin-top: 0.2em;
+  outline: none;
+  border-radius: 20px / 100%;
+  background-image:
+   linear-gradient(45deg, rgba(255,255,255,.0) 30%, rgba(255,255,255,.8), rgba(255,255,255,.0) 70%),
+   linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0) 20%, rgba(255,255,255,0) 90%, rgba(255,255,255,.3)),
+   linear-gradient(to right, rgba(125,125,125,1), rgba(255,255,255,.9) 45%, rgba(125,125,125,.5)),
+   linear-gradient(to right, rgba(125,125,125,1), rgba(255,255,255,.9) 45%, rgba(125,125,125,.5)),
+   linear-gradient(to right, rgba(223,190,170,1), rgba(255,255,255,.9) 45%, rgba(223,190,170,.5)),
+   linear-gradient(to right, rgba(223,190,170,1), rgba(255,255,255,.9) 45%, rgba(223,190,170,.5));
+  background-repeat: no-repeat;
+  background-size: 200% 100%, auto, 100% 2px, 100% 2px, 100% 1px, 100% 1px;
+  background-position: 200% 0, 0 0, 0 0, 0 100%, 0 4px, 0 calc(100% - 4px);
+  box-shadow: rgba(0,0,0,.5) 3px 10px 10px -10px;
+}
+.endButton:hover {
+  transition: .5s linear;
+  background-position: -200% 0, 0 0, 0 0, 0 100%, 0 4px, 0 calc(100% - 4px);
+}
+.endButton:active {
+  top: 1px;
+}

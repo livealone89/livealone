@@ -24,6 +24,19 @@ gameBG.load();
 menuBG.load();
 gameLose1.load();
 gameLose2.load();
+// Определяем размер поля для мобильный устройств
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i
+    .test(navigator.userAgent)) {
+
+    gameField.style.maxWidth = '100%';
+    gameField.style.minWidth = '100%';
+    gameField.style.minHeight=  '97vh';
+
+} else {
+  gameField.style.maxWidth = '100%';
+  gameField.style.minWidth = '30vw';
+  gameField.style.minHeight=  '97vh';
+}
 
 // Получаем ширину фона и ширину игрового поля
 var backgroundWidth = gameField.offsetWidth;

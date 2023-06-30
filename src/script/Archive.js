@@ -13,18 +13,11 @@ const gameLose2 = new Audio('./src/sound/gameLose2.wav')
 const coinObtain = new Audio('./src/sound/coin.wav')
 const teleport = new Audio('./src/sound/teleport.wav')
 const coinCounter = new Audio('./src/sound/coinCounter.wav')
-const menuClick = new Audio('./src/sound/menuClick.wav')
-const newHScore = new Audio('./src/sound/newHScore.wav')
-const allSounds = [jumpSound, gameBG, menuBG, gameLose1, gameLose2, coinObtain, teleport, coinCounter, menuClick, newHScore]; 
-
 menuBG.loop = true;
 gameBG.loop = true;
-newHScore.load();
-newHScore.volume = 0.6;
 jumpSound.load();
 teleport.load();
 coinCounter.load();
-menuClick.load();
 teleport.volume = 0.7;
 coinCounter.volume = 0.4;
 gameBG.load();
@@ -34,9 +27,11 @@ gameLose2.load();
 // Определяем размер поля для мобильный устройств
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i
     .test(navigator.userAgent)) {
+
     gameField.style.maxWidth = '100%';
     gameField.style.minWidth = '100%';
-    gameField.style.minHeight=  '97vh'
+    gameField.style.minHeight=  '97vh';
+
 } else {
   gameField.style.maxWidth = '100%';
   gameField.style.minWidth = '30vw';
@@ -59,23 +54,20 @@ var highestPrevJump = 700;
 let scoreJump = 0;
 var gameOver = false;
 var isPlatformdown = true;
-let platformMoveDistance = 0;
 let gameLoop;
 let jumpInterval;
-let lbAnimationRot;
-let lbAnimationScale;
 var platStyleTimer;
 var gameSettingsInterval;
 let startGame;
+var jumpScore = 0;
 let gameDifficult= 1;
 let gameScore = 0;
 let coinScore = 0;
 var inMenu = false;
 let highestScoreTotal = 0;
-let currentPlayer = 'Player';
 // Настройки для создания платформ
 var existingPlatforms = document.getElementsByClassName("platform");
-var platformWidth = 55; // Ширина платформы
+var platformWidth = 70; // Ширина платформы
 var platformHeight = 50; // Высота платформы
 var platformGap = 100; // Промежуток между платформами
 var minPlatformPosition = 20; // Минимальное положение платформы по вертикали
@@ -114,24 +106,21 @@ function mainMenu (){
   menuBG.play();
   //Общий блок текста
   let mainMenuBlock = document.createElement("div");
-  mainMenuBlock.setAttribute("id","mainMenu");
-  mainMenuBlock.style.display = 'flex';
-  // mainMenuBlock.style.maxWidth = (gpose.right-gpose.left-50) +'px';
-  mainMenuBlock.style.width = ((gpose.right-gpose.left)/1.2) +'px';
-  mainMenuBlock.style.justifyContent = 'center';
-  mainMenuBlock.style.flexDirection = 'column';
+  mainMenuBlock.style.display = 'flex'
+  mainMenuBlock.style.maxWidth = (gpose.right-gpose.left-50) +'px'
+  mainMenuBlock.style.width = ((gpose.right-gpose.left)/2) +'px'
+  mainMenuBlock.style.justifyContent = 'center'
+  mainMenuBlock.style.flexDirection = 'column'
   mainMenuBlock.style.position = "absolute";
-  mainMenuBlock.style.left = (gpose.right-((gpose.right-gpose.left)/1.1)) + "px"
+  mainMenuBlock.style.left = (gpose.right-((gpose.right-gpose.left)/1.4)) + "px"
   mainMenuBlock.style.top = (gpose.top +100) + "px"
   document.body.appendChild(mainMenuBlock);
   // Название игры
   let gameName = document.createElement("h1");
   gameName.textContent = "Doodle Jump";
-  gameName.style.textAlign = 'center';
-  gameName.style.transform = "rotate(-7deg)";
   gameName.style.fontFamily = 'Train One';
-  gameName.style.fontSize = '50px';
-  gameName.style.fontWeight = '600';
+  gameName.style.fontSize = '60px'
+  gameName.style.fontWeight = '600'
   mainMenuBlock.appendChild(gameName);
   // Подгрузка статистики локальной
   let scoreArchive = [];
@@ -145,14 +134,11 @@ function mainMenu (){
   let buttonStart = document.createElement("button");
   buttonStart.classList.add('endButton', 'platform');
   buttonStart.textContent = "New Game";
-  buttonStart.style.width = ((gpose.right-gpose.left)/4) +'px';
-  buttonStart.style.left = ((gpose.right-gpose.left)/3.5) +'px';
   buttonStart.style.fontSize = '15px'
   buttonStart.style.fontWeight = '600'
-  buttonStart.style.top =(gpose.bottom - gameField.offsetHeight/1.6) +"px"
+  buttonStart.style.top =(gpose.bottom - 400) +"px"
   mainMenuBlock.appendChild(buttonStart);
   buttonStart.focus({focusVisible: true});
-  buttonStart.onmouseover = ()=>{buttonStart.style.cursor = "pointer"}
   buttonStart.addEventListener('click',function(){
     gameField.style.backgroundPosition = 'bottom';
     gameSettingsInterval = setInterval (()=>{
@@ -178,6 +164,7 @@ function mainMenu (){
     gameOver = false;
     platformImages = ["./src/img/PG1.png","./src/img/PG2.png","./src/img/PG3.png","./src/img/PG4.png"];
     platformHue = 'hue-rotate(220deg) brightness(0.8)'
+    jumpScore = 0;
     basePlatformGenerate() // Создание базовой платформы
     // Запуск игровых функций
     startGame = setTimeout (() => {
@@ -192,67 +179,11 @@ function mainMenu (){
     },500)
     
   })
-  // Блок кнопок 
-  let buttonsMenu = document.createElement("div");
-  buttonsMenu.style.position = "absolute";
-  buttonsMenu.style.display = "flex";
-  buttonsMenu.style.width = "inherit";
-  buttonsMenu.style.justifyContent = 'space-evenly';
-  buttonsMenu.style.top =(gpose.bottom-300) +"px"
-  mainMenuBlock.appendChild(buttonsMenu);
-  // Кнопка лидеборда
-  let leaderboardBtn = document.createElement("div");
-  leaderboardBtn.style.position = "relative";
-  leaderboardBtn.style.display = "flex";
-  leaderboardBtn.style.flexDirection = 'column';
-  leaderboardBtn.style.alignItems = 'center';
-  let leaderboardImg = document.createElement("img");
-  leaderboardImg.style.width = fieldWidth/8 + "px";
-  leaderboardImg.src = './src/img/leaderboard.png';
-  let leaderboardTxt = document.createElement("p");
-  leaderboardTxt.textContent = "Leaderboard";
-  leaderboardTxt.style.fontSize = '13px';
-  leaderboardTxt.style.color = "lightblue";
-  leaderboardBtn.appendChild(leaderboardImg);
-  leaderboardBtn.appendChild(leaderboardTxt);
-  buttonsMenu.appendChild(leaderboardBtn);
-  leaderboardBtn.onmouseover = ()=>{leaderboardBtn.style.cursor = "pointer"}
-  leaderboardBtn.onclick = ()=>{
-    character.animate([{transform: "translate(0)"},  {transform: "translate(-160%, 280%)"}],500);
-    menuClick.play();
-    clearInterval(jumpInterval);
-    clearInterval(gameLoop);
-    clearTimeout(startGame);
-    clearInterval(gameSettingsInterval);
-    field.style.filter = 'blur(1px)';
-    character.style.filter = 'none';
-    document.body.removeChild(document.getElementById('mainMenu'));
-    setTimeout(leadrboardMenu,500);
-  }
-  // Кнопка настроек
-  let settingsBtn = document.createElement("div");
-  settingsBtn.style.position = "relative";
-  settingsBtn.style.display = "flex";
-  settingsBtn.style.flexDirection = 'column';
-  settingsBtn.style.alignItems = 'center';
-  let settingsImg = document.createElement("img");
-  settingsImg.style.width = fieldWidth/8 + "px";
-  settingsImg.src = './src/img/settings.png';
-  let settingsTxt = document.createElement("p");
-  settingsTxt.textContent = "Settings";
-  settingsTxt.style.fontSize = '13px';
-  settingsTxt.style.color = "lightblue";
-  settingsBtn.appendChild(settingsImg);
-  settingsBtn.appendChild(settingsTxt);
-  buttonsMenu.appendChild(settingsBtn);
-  settingsBtn.onmouseover = ()=>{settingsBtn.style.cursor = "pointer"}
-  // Highest score
+  // Название игры
   let scoreHighestTotal = document.createElement("div");
   let highestScore = scoreArchive[0]? `Hihest Score: ${scoreArchive[0].score}pts` : 'No Highest Score'
   scoreHighestTotal.textContent = highestScore;
-  scoreHighestTotal.style.width = "inherit";
   scoreHighestTotal.style.color = "lightblue"
-  scoreHighestTotal.style.textAlign = 'center';
   scoreHighestTotal.style.top =(gpose.bottom-200) +"px"
   scoreHighestTotal.style.position = "absolute";
   mainMenuBlock.appendChild(scoreHighestTotal);
@@ -260,202 +191,6 @@ function mainMenu (){
   character.style.bottom = (gpose.bottom - 400) +"px"
   jump();
 }
-// Лидерборд меню
-function leadrboardMenu (){
-  // Основной блок
-  let leaderboardBlock = document.createElement("div");
-  leaderboardBlock.style.zIndex = "2";
-  leaderboardBlock.style.display = 'flex';
-  leaderboardBlock.style.width = (0.8*fieldWidth) +'px';
-  leaderboardBlock.style.justifyContent = 'center';
-  leaderboardBlock.style.flexDirection = 'column';
-  leaderboardBlock.style.position = "absolute";
-  leaderboardBlock.style.left = (gpose.left+((gpose.right-gpose.left)/8)) + "px";
-  leaderboardBlock.style.top = (gpose.top +100) + "px";
-  leaderboardBlock.style.opacity = '0.7';
-  document.body.appendChild(leaderboardBlock);
-  // Название игры
-  let gameName = document.createElement("h1");
-  gameName.style.position = "absolute";
-  gameName.style.top = "-60px";
-  gameName.textContent = "Doodle Jump";
-  gameName.style.transform = "rotate(-7deg)";
-  gameName.style.textAlign = 'top';
-  gameName.style.fontFamily = 'Train One';
-  gameName.style.fontSize = '40px';
-  gameName.style.fontWeight = '600';
-  leaderboardBlock.appendChild(gameName);
-  // Leaderboard title
-  let leaderboardHeader = document.createElement("div");
-  leaderboardHeader.textContent = "Leaderboard";
-  leaderboardHeader.style.textAlign = 'center';
-  leaderboardHeader.style.fontFamily = 'Train One';
-  leaderboardHeader.style.fontSize = '40px';
-  leaderboardHeader.style.fontWeight = '600';
-  leaderboardHeader.style.backgroundColor = '#57369c';
-  leaderboardHeader.style.color = '#a49eb0';
-  leaderboardHeader.style.border = 'thick double #8b62e3';
-  leaderboardHeader.style.borderRadius = '10% / 50%'
-  leaderboardBlock.appendChild(leaderboardHeader);
-  // Персонаж 
-  let podium = document.createElement("img");
-  podium.src = './src/img/podium.png';
-  podium.style.width = platformWidth + 'px';
-  podium.style.position = 'absolute';
-  podium.style.top = gpose.bottom/1.5+'px';
-  character.style.zIndex = "15";
-  character.style.opacity = '1';
-  character.style.position = 'absolute';
-  character.style.bottom = gpose.bottom/5.5+'px';
-  character.style.left = (gpose.left+((gpose.right-gpose.left)/8)-15) +'px';
-    lbAnimationRot = setInterval (function(){
-      charRightEar.animate(jumpRotationRE, 2000);
-      charLeftEar.animate(jumpRotationLE, 2000);
-      charRightHand.animate(jumpRotationRH, 2000);
-      charLeftHand.animate(jumpRotationLH, 2000);
-    }, (Math.random()*(9-3)+4)*1000);
-    lbAnimationScale = setInterval (function(){
-    character.animate([{transform: "scale(1) translate(0)"},  {transform: "scale(1.1)translate(0, -10%)"}],2000);
-    }, (Math.random()*(9-2)+4)*1000);
-  leaderboardBlock.appendChild(podium);
-  
-  // Назад в меню блок
-  let backToMenu = document.createElement("div");
-  backToMenu.style.padding = '10px';
-  backToMenu.style.position = 'absolute';
-  backToMenu.style.display = 'flex';
-  backToMenu.style.borderRadius = '20%'
-  backToMenu.style.backgroundColor = '#57369c';
-  backToMenu.style.opacity = '0.7';
-  backToMenu.style.top = '450px';
-  backToMenu.style.left = ((gpose.right-gpose.left)/3) +'px';
-  backToMenu.style.transform = "rotate(3deg)";
-  let backToMenuImg = document.createElement("img");
-  backToMenuImg.src = './src/img/toMenu.png';
-  backToMenuImg.style.height = platformHeight + 'px';
-  backToMenu.appendChild(backToMenuImg);
-  let backToMenuText = document.createElement("div");
-  backToMenuText.textContent = "Menu";
-  backToMenuText.style.textAlign = 'center';
-  backToMenuText.style.fontFamily = 'Train One';
-  backToMenuText.style.fontSize = '40px';
-  backToMenuText.style.fontWeight = '600';
-  backToMenu.appendChild(backToMenuText);
-  backToMenu.onmouseover = ()=>{backToMenu.style.cursor = "pointer"}
-  backToMenu.onclick = ()=> {
-    character.animate([{transform: "translate(0)"},  {transform: "translate(160%, -280%)"}],300)
-    leaderboardBlock.remove();
-    clearInterval(lbAnimationRot);
-    clearInterval(lbAnimationScale);
-    menuClick.play();
-    field.style.filter = 'none';
-    setTimeout(()=> {
-    character.style.left = (gpose.left+((gpose.right-gpose.left)/2.35)) + "px"
-    mainMenu();
-    },300);
-  }
-
-  // Leaderboard записи 
-  let leaderboardScores = document.createElement("div");
-  // leaderboardScores.style.position = "absolute";
-  leaderboardScores.style.top = 'inherit';
-  leaderboardScores.style.width = 'inherit';
-  leaderboardScores.style.display = 'flex';
-  leaderboardScores.style.flexDirection = 'column';
-  leaderboardScores.style.justifyContent = 'center';
-  leaderboardScores.style.textAlign = 'center';
-  leaderboardScores.style.alignContent = 'center';
-  leaderboardScores.style.paddingLeft = '10px';
-  leaderboardScores.style.paddingTop = '10px';
-  leaderboardScores.style.fontFamily = 'Train One';
-  leaderboardScores.style.fontSize = '20px';
-  leaderboardScores.style.backgroundColor = '#38265c';
-  leaderboardScores.style.color = '#a49eb0';
-  leaderboardScores.style.borderRadius = '3%';
-  leaderboardBlock.appendChild(leaderboardScores);
-  leaderboardBlock.appendChild(backToMenu);
-  // Подгрузка статистики локальной
-  let scoreArchive = [];
-  for(let i=0; i<localStorage.length; i++) {
-    let key = localStorage.key(i);
-    scoreArchive.push(JSON.parse(localStorage.getItem(key)));
-  }
-  scoreArchive.sort((a, b) => a.score > b.score ? -1 : 1);
-  if (scoreArchive[0]) {
-    for (let i=0; i<10; i++) {
-      if (scoreArchive[i]) {
-        let lbPosition = document.createElement("div");
-        lbPosition.style.display = 'flex';
-        lbPosition.style.position = "relative";
-        lbPosition.style.textAlign = 'center';
-        lbPosition.style.alignContent = 'center';
-        lbPosition.style.marginLeft = 0.1*parseInt(leaderboardBlock.style.width) +'px';
-        // lbPosition.style.justifyContent = 'space-around';
-        // Позиция 
-        let lbPositionNum = document.createElement("div");
-        lbPositionNum.style.marginBottom = '5px'
-        lbPositionNum.style.marginRight = '15px'
-        lbPositionNum.style.height = '30px';
-        lbPositionNum.style.width = '30px';
-        switch (i){
-          case 0: 
-          lbPositionNum.style.backgroundImage = "url('./src/img/goldMedal.png')"; 
-          lbPositionNum.style.backgroundSize = 'contain';
-          lbPositionNum.style.backgroundRepeat = 'no-repeat';
-          break;
-          case 1: 
-          lbPositionNum.style.backgroundImage = "url('./src/img/silverMedal.png')";
-          lbPositionNum.style.backgroundSize = 'contain';
-          lbPositionNum.style.backgroundRepeat = 'no-repeat';
-          break;
-          case 2: 
-          lbPositionNum.style.backgroundImage = "url('./src/img/bronzeMedal.png')";
-          lbPositionNum.style.backgroundSize = 'contain';
-          lbPositionNum.style.backgroundRepeat = 'no-repeat';
-          break;
-          default: lbPositionNum.textContent = i+1;
-        } 
-        lbPosition.appendChild(lbPositionNum);
-        // Player avatar
-        let lbImg = document.createElement("img");
-        lbImg.src = './src/img/player.png';
-        lbImg.style.height = '25px';
-        lbImg.style.width = '25px';
-        lbImg.style.marginRight = '10px';
-        lbPosition.appendChild(lbImg);
-        //Score block
-        let lbPlayerScoreBlock = document.createElement("div");
-        // lbPlayerScoreBlock.style.backgroundColor = '#5e468f';
-        // lbPlayerScoreBlock.style.borderRadius = '20%';
-        lbPlayerScoreBlock.style.display = 'flex';
-        lbPlayerScoreBlock.style.height = 'inherit';
-        // Player name
-        let lbPlayer = document.createElement("div");
-        lbPlayer.textContent = scoreArchive[i].name;
-        lbPlayer.style.marginRight = '15px';
-        lbPlayerScoreBlock.appendChild(lbPlayer);
-        // Player score
-        let lbScore = document.createElement("div");
-        lbScore.textContent = scoreArchive[i].score + 'pts';
-        lbPlayerScoreBlock.appendChild(lbScore);
-        lbPosition.appendChild(lbPlayerScoreBlock);
-        leaderboardScores.appendChild(lbPosition);
-      } else {
-        return
-      }
-    }
-  } else {
-    let lbNull = document.createElement("div");
-    lbNull.textContent = 'No scores'
-    lbNull.style.textAlign = 'center';
-    lbNull.style.fontFamily = 'Train One';
-    lbNull.style.fontSize = '20px';
-    leaderboardBlock.appendChild(lbNull);
-  }
-  
-
-}
-
 // Создание и настройка очков
 function createScore (){
   let gameScorePlat = document.createElement("div");
@@ -569,72 +304,60 @@ function jump() {
   charLeftEar.animate(jumpRotationLE, 2000);
   charRightHand.animate(jumpRotationRH, 2000);
   charLeftHand.animate(jumpRotationLH, 2000);
+  jumpScore = 0;
   jumpSound.play()
   document.getElementsByClassName('basePlatform')? highestPrevJump = 700:jumpCount = 0;
   jumpInterval = setInterval(function () {
     gravity = 2;
     // Перемещаем персонаж вверх
       if (jumpCount < 9) {
-        if (parseInt(character.style.bottom)  > window.innerHeight*0.7) {
-          bottomPosition += jumpHeight*0.5;
-          platformMoveDistance = 2*jumpHeight*(1+window.innerHeight/parseInt(character.style.bottom))
-          backgroundPosition -= jumpHeight/5.5;
-          scoreJump -= jumpHeight*0.5;
-        } else if (parseInt(character.style.bottom)  > window.innerHeight/2) {
+        jumpScore += 2 * jumpHeight;
+        if (parseInt(character.style.bottom) > window.innerHeight/2){
+          movingPlatforms = document.querySelectorAll(".platform");
+          movingPlatforms.forEach (function(platform) {
+            platformBottom = parseInt(platform.style.bottom) - 2*jumpHeight
+            platform.style.bottom = platformBottom + "px";
+          })
           bottomPosition += jumpHeight;
-          platformMoveDistance = 2*jumpHeight;
-          inMenu? scoreJump -= jumpHeight: backgroundPosition -= jumpHeight/4.5;
-          scoreJump -= jumpHeight
-        } else if (parseInt(character.style.bottom) > highestPrevJump) {
-          bottomPosition += jumpHeight;
-          platformMoveDistance = jumpHeight;
-          backgroundPosition -= jumpHeight/3; 
         } else {
           bottomPosition += 2 * jumpHeight;
-          platformMoveDistance = 0;
         }
+        if (parseInt(character.style.bottom) > highestPrevJump){
+        // Смещение фоновой картинки вверх при прыжке
+        backgroundPosition -= jumpHeight/2; 
+        bottomPosition -= jumpHeight;
+        gameField.style.backgroundPosition = "center bottom " + backgroundPosition + "px";
+        // Смещение платформ вниз при прыжке
         movingPlatforms = document.querySelectorAll(".platform");
         movingPlatforms.forEach (function(platform) {
-          platformBottom = parseInt(platform.style.bottom) - platformMoveDistance;
+          platformBottom = parseInt(platform.style.bottom) - jumpHeight
           platform.style.bottom = platformBottom + "px";
         })
-        gameField.style.backgroundPosition = "center bottom " + backgroundPosition + "px";
+        }
         character.style.bottom = bottomPosition + "px";
-
         platformRemove();
         checkCoins();
         inMenu === false ? moveCharacter():movementDirection = 0; 
         if (bottomPosition >scoreJump){
           gameScore += 2;
         }
-      } else if (jumpCount >= 9 && jumpCount < 14) {
-
-        if (parseInt(character.style.bottom)  > window.innerHeight*0.7) {
+      } else if (jumpCount >= 9 && jumpCount < 15) {
+        jumpScore += 0.5 * jumpHeight;
+        if (parseInt(character.style.bottom) > highestPrevJump){
+          // Смещение фоновой картинки вверх при прыжке
+          backgroundPosition -= 0.15 * jumpHeight;; 
+          gameField.style.backgroundPosition = "center bottom " + backgroundPosition + "px";
+          // Смещение платформ вниз при прыжке
+          movingPlatforms = document.querySelectorAll(".platform");
+          movingPlatforms.forEach (function(platform) {
+            platformBottom = parseInt(platform.style.bottom) - 0.3 * jumpHeight;
+            platform.style.bottom = platformBottom + "px";
+          })
           bottomPosition += 0.5 * jumpHeight - 0.3 * jumpHeight;
-          platformMoveDistance = jumpHeight*(1+window.innerHeight/parseInt(character.style.bottom))
-          backgroundPosition -= 0.2*jumpHeight;
-          scoreJump -= 0.5 * jumpHeight - 0.3 * jumpHeight;
-        } else if (parseInt(character.style.bottom)  > window.innerHeight/2) {
-          bottomPosition += 0.5 * jumpHeight - 0.3 * jumpHeight;
-          platformMoveDistance = 0.6*jumpHeight;
-          inMenu? scoreJump -= 0.5 * jumpHeight - 0.3 * jumpHeight: backgroundPosition -= 0.2*jumpHeight;
-          scoreJump -= 0.5 * jumpHeight - 0.3 * jumpHeight;
-        } else if (parseInt(character.style.bottom) > highestPrevJump) {
-          bottomPosition += 0.5 * jumpHeight - 0.3 * jumpHeight;
-          platformMoveDistance = 0.3 * jumpHeight;
-          backgroundPosition -= 0.1 * jumpHeight; 
         } else {
           bottomPosition += 0.5 * jumpHeight;
-          platformMoveDistance = 0;
         }
-        movingPlatforms = document.querySelectorAll(".platform");
-        movingPlatforms.forEach (function(platform) {
-          platformBottom = parseInt(platform.style.bottom) - platformMoveDistance;
-          platform.style.bottom = platformBottom + "px";
-        })
-        gameField.style.backgroundPosition = "center bottom " + backgroundPosition + "px";
         character.style.bottom = bottomPosition + "px";
-
         platformRemove();
         checkCoins ();
         inMenu === false ? moveCharacter():movementDirection = 0; 
@@ -645,6 +368,7 @@ function jump() {
         // Определение верхней платформы
         highestPrevJump = parseInt(character.style.bottom);
         scoreJump=highestPrevJump;
+        console.log ('highestPrevJump - ', highestPrevJump, " scoreJump - ", scoreJump)
         existingPlatforms = document.querySelectorAll('.platform')
         var highestTopPlatform = highestPrevJump/2.5;
         existingPlatforms.forEach(function(platform){
@@ -662,10 +386,22 @@ function jump() {
         // Падение
         gameLoop = setInterval(function () {
           inMenu === false ? moveCharacter():movementDirection = 0; // блокировка управления в меню
-          bottomFallenPosition -= gravity
+          if (parseInt(character.style.bottom)>window.innerHeight*0.7){
+          // Смещение фоновой картинки вверх при прыжке
+          backgroundPosition -=  (window.innerHeight/parseInt(character.style.bottom))* jumpHeight;; 
+          gameField.style.backgroundPosition = "center bottom " + backgroundPosition + "px";
+          bottomFallenPosition -=gravity*(1+window.innerHeight/parseInt(character.style.bottom));
+          movingPlatforms = document.querySelectorAll(".platform");
+          movingPlatforms.forEach (function(platform) {
+            platformBottom = parseInt(platform.style.bottom) - jumpHeight*(window.innerHeight/parseInt(character.style.bottom));
+            platform.style.bottom = platformBottom + "px";
+          })
+          } else {
+            bottomFallenPosition -= gravity
+          }
           character.style.bottom = bottomFallenPosition + "px";
-          gravity += 0.04;
-          (parseInt(character.style.bottom)  < window.innerHeight*0.65)? checkCollision(highestPrevJump): bottomFallenPosition -= gravity; // Проверяем столкновения с платформами
+          gravity += 0.05;
+          checkCollision(highestPrevJump); // Проверяем столкновения с платформами
           checkCoins ();
           // Проигрыш если персонаж упал ниже экрана
           if (parseInt(character.style.bottom) < 0 && gameOver === false ) {
@@ -674,10 +410,10 @@ function jump() {
             loseGame();
             return
           }
-        }, 7);
+        }, 5);
       }
     jumpCount++;
-  }, 37);
+  }, 25);
   
 }
 // Функция для проверки столкновений с платформами
@@ -896,14 +632,13 @@ function loseGame (){
         scoreGathered.classList.remove("animate__animated", "animate__pulse", "animate__infinite");
         //Сохраняем статистику в Local Storage 
         let lastKey = localStorage.length+1;
-        let scoreInfo = {name: currentPlayer, score: gameScore, time: new Date().toLocaleString()}
+        let scoreInfo = {name: 'player', score: gameScore, time: new Date().toLocaleString()}
         localStorage.setItem(lastKey, JSON.stringify(scoreInfo));
         // Обновляем хайскор
         if (highestScoreTotal<gameScore|| highestScoreTotal===0) {
           let bestScore = gameScore
           scoreHighestTot.textContent = "Highest score: " + bestScore + "pts";
           let highscoreImg = document.createElement("img");
-          newHScore.play();
           highscoreImg.src = "./src/img/highScore.png"
           highscoreImg.style.width = '70px';
           highscoreImg.style.transform = 'rotate(-30deg)';
@@ -923,28 +658,7 @@ function loseGame (){
   scoreHighestTot.style.fontWeight = '600'
   scoreHighestTot.style.marginBottom = '10px'
   gameOverDiv.appendChild(scoreHighestTot);
-  // Имя игрока
-  let playerName = document.createElement("div");
-  playerName.style.display = 'flex'
-  playerName.style.justifyContent = 'center'
-  gameOverDiv.appendChild(playerName);
-  let playerNameDesc = document.createElement("div");
-  playerNameDesc.textContent = "Your name: "
-  playerName.appendChild(playerNameDesc);
-  let playerNameField = document.createElement("input");
-  playerNameField.type = 'text';
-  playerNameField.style.marginLeft = "15px";
-  playerNameField.value = currentPlayer;
-  playerNameField.oninput = ()=>{
-    currentPlayer = playerNameField.value 
-  }
-  playerNameField.onchange = ()=>{
-  //Обновляем статистику в Local Storage 
-  let curKey = localStorage.length;
-  let scoreInfo = {name: currentPlayer, score: gameScore, time: new Date().toLocaleString()}
-  localStorage.setItem(curKey, JSON.stringify(scoreInfo));
-  }
-  playerName.appendChild(playerNameField);
+  
   // Кнопка начать заново 
   let buttonRestart = document.createElement("button");
   buttonRestart.classList.add('endButton');
